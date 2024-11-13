@@ -1,0 +1,17 @@
+﻿@model AutodijeloviDemic.Models.Category
+
+<h2>Detalji kategorije</h2>
+
+<p><strong>Ime kategorije:</strong> @Model.Name</p>
+@if (Model.ImageData != null)
+{
+    <p><strong>Slika:</strong></p>
+    <img src="data:@Model.ImageMimeType;base64,@Convert.ToBase64String(Model.ImageData)" alt="@Model.Name" style="width: 150px;" />
+}
+else
+{
+    <p><strong>Slika:</strong> Nema slike</p>
+}
+
+<a href="@Url.Action("Index")" class="btn btn-secondary">Nazad na listu</a>
+<a href="@Url.Action("Edit", new { id = Model.CategoryId })" class="btn btn-primary">Uredi</a>

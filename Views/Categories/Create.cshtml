@@ -1,0 +1,23 @@
+﻿@model AutodijeloviDemic.Models.Category
+
+<h1>Dodaj novu kategoriju</h1>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Image" class="control-label">Izaberi sliku (opcionalno)</label>
+        <input type="file" name="Image" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Spremi</button>
+</form>
+
+<a href="@Url.Action("Index", "Categories")" class="btn btn-secondary">Nazad na kategorije</a>
+
+
+

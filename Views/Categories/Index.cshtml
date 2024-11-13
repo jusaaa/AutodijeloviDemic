@@ -1,0 +1,39 @@
+﻿@model IEnumerable<AutodijeloviDemic.Models.Category>
+
+<h1>Kategorije</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ime Kategorije</th>
+            <th>Slika</th>
+            <th>Akcije</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.Name</td>
+                <td>
+                    @if (category.ImageData != null && category.ImageMimeType != null)
+                    {
+                        <img src="data:@category.ImageMimeType;base64,@Convert.ToBase64String(category.ImageData)"
+                             alt="@category.Name" style="width: 100px;" />
+                    }
+                    else
+                    {
+                        <span>Nema slike</span>
+                    }
+                </td>
+                <td>
+                    <a href="@Url.Action("Details", "Categories", new { categoryId = category.CategoryId })">Detalji</a> |
+                    <a href="@Url.Action("Edit", "Categories", new { categoryId = category.CategoryId })">Uredi</a> |
+                    <a href="@Url.Action("Delete", "Categories", new { categoryId = category.CategoryId })">Obriši</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Create", "Categories")" class="btn btn-primary">Dodaj novu kategoriju</a>

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AutodijeloviDemic.Data;
@@ -10,9 +8,7 @@ using AutodijeloviDemic.Models;
 
 namespace AutodijeloviDemic.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ProductsController : ControllerBase
+    public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
@@ -21,72 +17,137 @@ namespace AutodijeloviDemic.Controllers
             _context = context;
         }
 
-        // GET: api/Products
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        // GET: Products
+        public async Task<IActionResult> Index()
         {
-            return await _context.Products.ToListAsync();
+            var products = await _context.Products.Include(p => p.Category).ToListAsync();
+            return View(products);
         }
 
-        // GET: api/Products/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(int id)
+        // GET: Products/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
-            var product = await _context.Products.FindAsync(id);
+            if (id == null) return NotFound();
 
-            if (product == null)
-            {
-                return NotFound();
-            }
+            var product = await _context.Products
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(m => m.ProductId == id);
 
-            return product;
+            if (product == null) return NotFound();
+
+            return View(product);
         }
 
-        // PUT: api/Products/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(int id, Product product)
+        // GET: Products/Create
+        public IActionResult Create()
         {
-            if (id != product.ProductId)
-            {
-                return BadRequest();
-            }
+            ViewBag.Categories = _context.Categories.ToList();
+            return View();
+        }
 
-            _context.Entry(product).State = EntityState.Modified;
-
-            try
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Product product, IFormFile? image)
+        {
+            if (ModelState.IsValid)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
+                if (image != null && image.Length > 0)
                 {
-                    return NotFound();
+                    using var memoryStream = new MemoryStream();
+                    await image.CopyToAsync(memoryStream);
+                    product.ImageData = memoryStream.ToArray();
+                    product.ImageMimeType = image.ContentType;
                 }
-                else
+
+                // Sada dodajemo Description
+                if (string.IsNullOrEmpty(product.Description))
                 {
+                    product.Description = string.Empty; // Dodajemo prazan opis ako nije unet
+                }
+
+                _context.Add(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Za populaciju kategorija u slučaju greške validacije
+            ViewBag.Categories = await _context.Categories.ToListAsync();
+            return View(product);
+        }
+
+
+        // GET: Products/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var product = await _context.Products.FindAsync(id);
+            if (product == null) return NotFound();
+
+            ViewBag.Categories = _context.Categories.ToList();
+            return View(product);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Description,Price,Stock,CategoryId")] Product product, IFormFile? Image)
+        {
+            if (id != product.ProductId) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (Image != null && Image.Length > 0)
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            await Image.CopyToAsync(ms);
+                            product.ImageData = ms.ToArray();
+                            product.ImageMimeType = Image.ContentType;
+                        }
+                    }
+                    else
+                    {
+                        var existingProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.ProductId == id);
+                        if (existingProduct != null)
+                        {
+                            product.ImageData = existingProduct.ImageData;
+                            product.ImageMimeType = existingProduct.ImageMimeType;
+                        }
+                    }
+
+                    _context.Update(product);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ProductExists(product.ProductId)) return NotFound();
                     throw;
                 }
+                return RedirectToAction(nameof(Index));
             }
 
-            return NoContent();
+            ViewBag.Categories = _context.Categories.ToList();
+            return View(product);
         }
 
-        // POST: api/Products
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
+        // GET: Products/Delete/5
+        public async Task<IActionResult> Delete(int? id)
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            if (id == null) return NotFound();
 
-            return CreatedAtAction("GetProduct", new { id = product.ProductId }, product);
+            var product = await _context.Products.Include(p => p.Category)
+                .FirstOrDefaultAsync(m => m.ProductId == id);
+
+            if (product == null) return NotFound();
+
+            return View(product);
         }
 
-        // DELETE: api/Products/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _context.Products.FindAsync(id);
             if (product == null)
@@ -96,9 +157,9 @@ namespace AutodijeloviDemic.Controllers
 
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
-
-            return NoContent();
+            return RedirectToAction(nameof(Index));
         }
+
 
         private bool ProductExists(int id)
         {

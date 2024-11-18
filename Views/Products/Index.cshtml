@@ -1,0 +1,49 @@
+﻿@model IEnumerable<AutodijeloviDemic.Models.Product>
+
+<h1>Lista proizvoda</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Naziv</th>
+            <th>Cijena</th>
+            <th>Količina</th>
+            <th>Kategorija</th>
+            <th>Slika</th>
+            <th>Akcije</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.Name</td>
+                <td>@product.Price.ToString("C")</td>
+                <td>@product.Stock</td>
+                <td>@product.Category?.Name</td>
+                <td>
+                    @if (product.ImageData != null && product.ImageMimeType != null)
+                    {
+                        <img src="data:@product.ImageMimeType;base64,@Convert.ToBase64String(product.ImageData)"
+                             alt="@product.Name" style="width: 100px;" />
+                    }
+                    else
+                    {
+                        <span>Nema slike</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@product.ProductId" class="btn btn-info">Detalji</a>
+                    <a asp-action="Edit" asp-route-id="@product.ProductId" class="btn btn-warning">Uredi</a>
+
+                    <!-- Forma za brisanje proizvoda -->
+                    <form asp-action="Delete" asp-route-id="@product.ProductId" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Obriši</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-primary">Dodaj novi proizvod</a>

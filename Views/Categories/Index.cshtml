@@ -27,13 +27,21 @@
                     }
                 </td>
                 <td>
-                    <a href="@Url.Action("Details", "Categories", new { categoryId = category.CategoryId })">Detalji</a> |
-                    <a href="@Url.Action("Edit", "Categories", new { categoryId = category.CategoryId })">Uredi</a> |
-                    <a href="@Url.Action("Delete", "Categories", new { categoryId = category.CategoryId })">Obriši</a>
+                    <a asp-action="Details" asp-route-id="@category.CategoryId" class="btn btn-info">Detalji</a>
+                    <a asp-action="Edit" asp-route-id="@category.CategoryId" class="btn btn-warning">Uredi</a>
+
+                    <!-- Forma za brisanje kategorije -->
+                    <form id="deleteCategoryForm_@category.CategoryId" asp-action="Delete" asp-route-id="@category.CategoryId" method="post" style="display:inline;">
+                        <button type="button" id="confirmDeleteCategoryBtn_@category.CategoryId" class="btn btn-danger">Obriši</button>
+                    </form>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<a href="@Url.Action("Create", "Categories")" class="btn btn-primary">Dodaj novu kategoriju</a>
+<a asp-action="Create" class="btn btn-primary">Dodaj novu kategoriju</a>
+
+@section Scripts {
+    <script src="~/js/confirmDelete.js"></script>
+}

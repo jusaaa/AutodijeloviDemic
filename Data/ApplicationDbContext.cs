@@ -9,6 +9,7 @@ namespace AutodijeloviDemic.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         { }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -16,7 +17,7 @@ namespace AutodijeloviDemic.Data
             // Definisanje preciznosti za decimalna svojstva
             modelBuilder.Entity<Order>()
                 .Property(o => o.TotalAmount)
-                .HasPrecision(8, 2);  // 18 cifara ukupno, 4 decimale
+                .HasPrecision(8, 2);
 
             modelBuilder.Entity<OrderItem>()
                 .Property(oi => oi.UnitPrice)
@@ -37,7 +38,15 @@ namespace AutodijeloviDemic.Data
             modelBuilder.Entity<ShoppingCartItem>()
                 .Property(sci => sci.UnitPrice)
                 .HasPrecision(8, 2);
+
+            // Relacija između Product i Category
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Category)
+                .WithMany(c => c.Products)
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade); // Brisanjem kategorije brišu se i povezani proizvodi
         }
+
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Order> Orders { get; set; }

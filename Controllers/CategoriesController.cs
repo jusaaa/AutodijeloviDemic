@@ -28,14 +28,14 @@ namespace AutodijeloviDemic.Controllers
         }
 
         // GET: Categories/Details/5
-        public async Task<IActionResult> Details(int? categoryId)
+        public async Task<IActionResult> Details(int? id)
         {
-            if (categoryId == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories.FirstOrDefaultAsync(m => m.CategoryId == categoryId);
+            var category = await _context.Categories.FirstOrDefaultAsync(m => m.CategoryId == id);
             if (category == null)
             {
                 return NotFound();
@@ -75,14 +75,14 @@ namespace AutodijeloviDemic.Controllers
         }
 
         // GET: Categories/Edit/5
-        public async Task<IActionResult> Edit(int? categoryId)
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (categoryId == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(categoryId);
+            var category = await _context.Categories.FindAsync(id);
             if (category == null)
             {
                 return NotFound();
@@ -93,9 +93,9 @@ namespace AutodijeloviDemic.Controllers
         // POST: Categories/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int categoryId, [Bind("CategoryId,Name,ImageData,ImageMimeType")] Category category, IFormFile? Image)
+        public async Task<IActionResult> Edit(int id, [Bind("CategoryId,Name,ImageData,ImageMimeType")] Category category, IFormFile? Image)
         {
-            if (categoryId != category.CategoryId)
+            if (id != category.CategoryId)
             {
                 return NotFound();
             }
@@ -104,7 +104,7 @@ namespace AutodijeloviDemic.Controllers
             {
                 try
                 {
-                    var categoryToUpdate = await _context.Categories.FindAsync(categoryId);
+                    var categoryToUpdate = await _context.Categories.FindAsync(id);
 
                     if (categoryToUpdate == null)
                     {
@@ -145,15 +145,15 @@ namespace AutodijeloviDemic.Controllers
         }
 
         // GET: Categories/Delete/5
-        public async Task<IActionResult> Delete(int? categoryId)
+        public async Task<IActionResult> Delete(int? id)
         {
-            if (categoryId == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.CategoryId == categoryId);
+                .FirstOrDefaultAsync(m => m.CategoryId == id);
             if (category == null)
             {
                 return NotFound();
@@ -162,12 +162,13 @@ namespace AutodijeloviDemic.Controllers
             return View(category);  // Prikazuje formu za brisanje kategorije
         }
 
+
         // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int categoryId)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(categoryId);
+            var category = await _context.Categories.FindAsync(id);
             if (category != null)
             {
                 _context.Categories.Remove(category);
@@ -175,6 +176,7 @@ namespace AutodijeloviDemic.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool CategoryExists(int id)
         {

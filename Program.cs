@@ -2,11 +2,13 @@ using AutodijeloviDemic.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System.Globalization;
 
 namespace AutodijeloviDemic
 {
     public class Program
     {
+
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +37,11 @@ namespace AutodijeloviDemic
                     Description = "API for managing car parts in AutodijeloviDemic"
                 });
             });
+            // Set Bosnian culture globally
+            var bosnianCulture = new CultureInfo("bs-BA");
+            CultureInfo.DefaultThreadCurrentCulture = bosnianCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = bosnianCulture;
+
 
             var app = builder.Build();
 
@@ -72,7 +79,7 @@ namespace AutodijeloviDemic
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{categoryId?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
             app.Run();

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutodijeloviDemic.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241115230034_DodavanjePoljaImageDataImageMimeType")]
-    partial class DodavanjePoljaImageDataImageMimeType
+    [Migration("20241119172218_AddAccountController")]
+    partial class AddAccountController
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -93,6 +93,9 @@ namespace AutodijeloviDemic.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -101,7 +104,18 @@ namespace AutodijeloviDemic.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordSalt")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -313,7 +327,6 @@ namespace AutodijeloviDemic.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("EmployeeId")
@@ -440,12 +453,21 @@ namespace AutodijeloviDemic.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShoppingCartId"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("TotalAmount")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal(8,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("ShoppingCartId");
 

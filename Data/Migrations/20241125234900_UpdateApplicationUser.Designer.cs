@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutodijeloviDemic.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241115230034_DodavanjePoljaImageDataImageMimeType")]
-    partial class DodavanjePoljaImageDataImageMimeType
+    [Migration("20241125234900_UpdateApplicationUser")]
+    partial class UpdateApplicationUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -71,47 +71,6 @@ namespace AutodijeloviDemic.Data.Migrations
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("AutodijeloviDemic.Models.Customer", b =>
-                {
-                    b.Property<int>("CustomerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerId"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CustomerId");
-
-                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("AutodijeloviDemic.Models.Employee", b =>
@@ -209,6 +168,9 @@ namespace AutodijeloviDemic.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
@@ -231,7 +193,7 @@ namespace AutodijeloviDemic.Data.Migrations
 
                     b.HasKey("OrderId");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("EmployeeId");
 
@@ -313,7 +275,6 @@ namespace AutodijeloviDemic.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("EmployeeId")
@@ -358,6 +319,9 @@ namespace AutodijeloviDemic.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -376,7 +340,7 @@ namespace AutodijeloviDemic.Data.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("ProductId");
 
@@ -440,16 +404,28 @@ namespace AutodijeloviDemic.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShoppingCartId"));
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("TotalAmount")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal(8,2)");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("ShoppingCartId");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("ShoppingCarts");
                 });
@@ -581,6 +557,11 @@ namespace AutodijeloviDemic.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -632,6 +613,10 @@ namespace AutodijeloviDemic.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator().HasValue("ApplicationUser");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.ApplicationUserClaim<string>", b =>
@@ -719,6 +704,39 @@ namespace AutodijeloviDemic.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("AutodijeloviDemic.Models.ApplicationUser", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.ApplicationUser");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("ApplicationUser");
+                });
+
             modelBuilder.Entity("AutodijeloviDemic.Models.AuditLog", b =>
                 {
                     b.HasOne("AutodijeloviDemic.Models.Employee", "Employee")
@@ -777,17 +795,15 @@ namespace AutodijeloviDemic.Data.Migrations
 
             modelBuilder.Entity("AutodijeloviDemic.Models.Order", b =>
                 {
-                    b.HasOne("AutodijeloviDemic.Models.Customer", "Customer")
+                    b.HasOne("AutodijeloviDemic.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Orders")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ApplicationUserId");
 
                     b.HasOne("AutodijeloviDemic.Models.Employee", null)
                         .WithMany("ManagedOrders")
                         .HasForeignKey("EmployeeId");
 
-                    b.Navigation("Customer");
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("AutodijeloviDemic.Models.OrderItem", b =>
@@ -841,11 +857,9 @@ namespace AutodijeloviDemic.Data.Migrations
 
             modelBuilder.Entity("AutodijeloviDemic.Models.Review", b =>
                 {
-                    b.HasOne("AutodijeloviDemic.Models.Customer", "Customer")
+                    b.HasOne("AutodijeloviDemic.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ApplicationUserId");
 
                     b.HasOne("AutodijeloviDemic.Models.Product", "Product")
                         .WithMany()
@@ -853,7 +867,7 @@ namespace AutodijeloviDemic.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Customer");
+                    b.Navigation("ApplicationUser");
 
                     b.Navigation("Product");
                 });
@@ -871,13 +885,11 @@ namespace AutodijeloviDemic.Data.Migrations
 
             modelBuilder.Entity("AutodijeloviDemic.Models.ShoppingCart", b =>
                 {
-                    b.HasOne("AutodijeloviDemic.Models.Customer", "Customer")
+                    b.HasOne("AutodijeloviDemic.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ApplicationUserId");
 
-                    b.Navigation("Customer");
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("AutodijeloviDemic.Models.ShoppingCartItem", b =>
@@ -955,11 +967,6 @@ namespace AutodijeloviDemic.Data.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("AutodijeloviDemic.Models.Customer", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
             modelBuilder.Entity("AutodijeloviDemic.Models.Employee", b =>
                 {
                     b.Navigation("ManagedOrders");
@@ -985,6 +992,11 @@ namespace AutodijeloviDemic.Data.Migrations
             modelBuilder.Entity("AutodijeloviDemic.Models.Supplier", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("AutodijeloviDemic.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

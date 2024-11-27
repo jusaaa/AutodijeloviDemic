@@ -10,6 +10,6 @@
         public DateTime ReviewDate { get; set; }
 
         public Product Product { get; set; }
-        public Customer Customer { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
     }
 }

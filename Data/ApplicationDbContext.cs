@@ -51,7 +51,7 @@ namespace AutodijeloviDemic.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
-        public DbSet<Customer> Customers { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }

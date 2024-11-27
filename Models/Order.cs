@@ -9,7 +9,7 @@
         // Status narudžbe (npr. Pending, Shipped, Delivered, Canceled)
         public string Status { get; set; }
         public int CustomerId { get; set; }
-        public Customer Customer { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
     }
 }

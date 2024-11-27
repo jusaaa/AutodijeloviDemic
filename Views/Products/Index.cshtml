@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<AutodijeloviDemic.Models.Product>
 
-<h1>Lista proizvoda</h1>
+<h1>Proizvodi</h1>
 
 <table class="table">
     <thead>
@@ -37,8 +37,8 @@
                     <a asp-action="Edit" asp-route-id="@product.ProductId" class="btn btn-warning">Uredi</a>
 
                     <!-- Forma za brisanje proizvoda -->
-                    <form asp-action="Delete" asp-route-id="@product.ProductId" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-danger">Obriši</button>
+                    <form id="deleteProductForm_@product.ProductId" asp-action="Delete" asp-route-id="@product.ProductId" method="post" style="display:inline;">
+                        <button type="button" id="confirmDeleteProductBtn_@product.ProductId" class="btn btn-danger">Obriši</button>
                     </form>
                 </td>
             </tr>
@@ -47,3 +47,7 @@
 </table>
 
 <a asp-action="Create" class="btn btn-primary">Dodaj novi proizvod</a>
+
+@section Scripts {
+    <script src="~/js/confirmDeleteProduct.js"></script>
+}

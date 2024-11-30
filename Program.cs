@@ -1,7 +1,9 @@
 using AutodijeloviDemic.Data;
 using AutodijeloviDemic.Models;
+using AutodijeloviDemic.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Globalization;
@@ -25,7 +27,7 @@ namespace AutodijeloviDemic
             // Add Identity services
             builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
             {
-                options.SignIn.RequireConfirmedAccount = false; // Ako ne tražiš potvrdu email-a
+                options.SignIn.RequireConfirmedAccount = false; // Ako tražiš potvrdu email-a
                 options.Password.RequiredLength = 6; // Minimalna dužina lozinke
                 options.Password.RequireNonAlphanumeric = false; // Bez posebnih znakova
                 options.Password.RequireDigit = true; // Obavezna cifra
@@ -65,6 +67,14 @@ namespace AutodijeloviDemic
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
+            // Configure email service
+            // Učitaj EmailSettings iz konfiguracije
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
+            // Registruj EmailSender kao servis za slanje email-ova
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
+
 
             // Set Bosnian culture globally
             var bosnianCulture = new CultureInfo("bs-BA");

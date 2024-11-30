@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using AutodijeloviDemic.Models;
 using System.Threading.Tasks;
+using AutodijeloviDemic.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AutodijeloviDemic.Controllers
 {
@@ -11,11 +14,13 @@ namespace AutodijeloviDemic.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IEmailSender _emailSender; // Dodali smo EmailSender
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailSender = emailSender; // Inicijalizacija EmailSender
         }
 
         // GET: /Account/Register
@@ -49,8 +54,28 @@ namespace AutodijeloviDemic.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    // Automatski prijavi korisnika nakon registracije
+                    // Generisanje tokena za potvrdu e-maila
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    // Kreiraj link za potvrdu
+                    var confirmationLink = Url.Action(
+                        nameof(ConfirmEmail),
+                        "Account", // Kontroler za potvrdu
+                        new { userId = user.Id, token = token },
+                        protocol: Request.Scheme
+                    );
+
+                    // Pošaljite verifikacioni e-mail
+                    await _emailSender.SendEmailAsync(
+                        model.Email,
+                        "Potvrda e-mail adrese",
+                        $"Kliknite <a href='{confirmationLink}'>ovde</a> da potvrdite svoju e-mail adresu."
+                    );
+
+                    // Prijavi korisnika nakon registracije
                     await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    // Povratna informacija korisniku
                     return RedirectToAction("Index", "Home");
                 }
 
@@ -100,6 +125,31 @@ namespace AutodijeloviDemic.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        // GET: /Account/ConfirmEmail
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (userId == null || token == null)
+            {
+                return BadRequest("Invalid email confirmation token.");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                return View("EmailConfirmed"); // Prikazivanje ekrana sa uspešnom potvrdom
+            }
+
+            return BadRequest("Email confirmation failed.");
         }
     }
 }

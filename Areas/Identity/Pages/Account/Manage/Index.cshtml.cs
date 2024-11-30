@@ -56,6 +56,11 @@ namespace AutodijeloviDemic.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+            /// 
+            [Required]
+            [Display(Name = "User Name")]
+            public string UserName { get; set; }
+
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
@@ -89,6 +94,7 @@ namespace AutodijeloviDemic.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
+                UserName = user.UserName,
                 PhoneNumber = phoneNumber,
                 FirstName = appUser?.FirstName,
                 LastName = appUser?.LastName,
@@ -134,6 +140,25 @@ namespace AutodijeloviDemic.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+            if (Input.UserName != user.UserName)
+            {
+                var userNameExists = await _userManager.FindByNameAsync(Input.UserName);
+                if (userNameExists != null)
+                {
+                    ModelState.AddModelError(string.Empty, "User Name already taken.");
+                    return Page();
+                }
+
+                user.UserName = Input.UserName;
+                var setUserNameResult = await _userManager.UpdateAsync(user);
+                if (!setUserNameResult.Succeeded)
+                {
+                    ModelState.AddModelError(string.Empty, "Unexpected error when trying to set user name.");
+                    return Page();
+                }
+            }
+
+
             var appUser = user as ApplicationUser;
             if (appUser != null)
             {

@@ -27,13 +27,14 @@ namespace AutodijeloviDemic
             // Add Identity services
             builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
             {
-                options.SignIn.RequireConfirmedAccount = false; // Ako tražiš potvrdu email-a
+                options.SignIn.RequireConfirmedAccount = true; // Ako tražiš potvrdu email-a
                 options.Password.RequiredLength = 6; // Minimalna dužina lozinke
                 options.Password.RequireNonAlphanumeric = false; // Bez posebnih znakova
                 options.Password.RequireDigit = true; // Obavezna cifra
                 options.Password.RequireUppercase = true; // Obavezno veliko slovo
             })
-             .AddEntityFrameworkStores<ApplicationDbContext>();
+             .AddEntityFrameworkStores<ApplicationDbContext>()
+             .AddDefaultTokenProviders();
 
             // Add cookie authentication
             builder.Services.ConfigureApplicationCookie(options =>
@@ -46,6 +47,7 @@ namespace AutodijeloviDemic
 
             // Add MVC services
             builder.Services.AddControllersWithViews();
+          
 
             // Add Swagger services
             builder.Services.AddEndpointsApiExplorer();

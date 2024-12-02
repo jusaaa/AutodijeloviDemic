@@ -1,4 +1,4 @@
-Ôªø// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -130,7 +130,7 @@ namespace AutodijeloviDemic.Areas.Identity.Pages.Account
 
                 if (user != null)
                 {
-                    // Poku≈°aj prijave
+                    // Pokuöaj prijave
                     var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                     if (result.Succeeded)
                     {
@@ -153,7 +153,7 @@ namespace AutodijeloviDemic.Areas.Identity.Pages.Account
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }
 
-            // Ako smo do≈°li do ovde, ne≈°to nije uspelo, redisplay form
+            // Ako smo doöli do ovde, neöto nije uspelo, redisplay form
             return Page();
         }
 

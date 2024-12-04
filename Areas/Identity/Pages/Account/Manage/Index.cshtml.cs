@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -10,6 +10,7 @@ using AutodijeloviDemic.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using AutodijeloviDemic.Validation;
 
 namespace AutodijeloviDemic.Areas.Identity.Pages.Account.Manage
 {
@@ -58,21 +59,25 @@ namespace AutodijeloviDemic.Areas.Identity.Pages.Account.Manage
             /// </summary>
             /// 
             [Required]
+            [StringLength(15, MinimumLength = 3, ErrorMessage = "Korisničko ime može sadržavati najmanje 3, a najviše 15 karaktera!")]
+            [RegularExpression(@"^[a-zA-Z0-9_.]+$", ErrorMessage = "Korisničko ime mogu sadržavati slova,brojevi,podvlaka i tačka!")]
             [Display(Name = "User Name")]
             public string UserName { get; set; }
 
             [Phone]
+            [PhoneNumber(ErrorMessage = "Telefonski format nije ispravan!")]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
 
-            [Required]
+            [StringLength(50, MinimumLength = 3, ErrorMessage = "Ime može sadržavati najmanje 3, a najviše 50 karaktera!")]
             [Display(Name = "First Name")]
             public string FirstName { get; set; }
 
-            [Required]
+            [StringLength(50, MinimumLength = 3, ErrorMessage = "Prezime može sadržavati najmanje 3, a najviše 50 karaktera!")]
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
 
+            [StringLength(150, ErrorMessage = "Adresa može imati najviše 150 karaktera!")]
             [Display(Name = "Address")]
             public string Address { get; set; }
 
